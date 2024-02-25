@@ -1,5 +1,20 @@
 <x-layout>
-    <x-setting heading="Manage Posts">
+    <x-setting heading="Manage Posts" >
+        <div class="flex justify-between items-center">
+            <div class="flex space-x-4">
+                <div>
+                    <x-import :route="$routeImport" />
+                </div>
+                <div>
+                    <x-export :route="$routeExport" />
+                </div>
+            </div>
+            <div>
+                <x-form.pdf-download-button>
+                    Download PDF
+                </x-form.pdf-download-button>
+            </div>
+        </div>                     
         <div class="flex flex-col">
             <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -27,7 +42,7 @@
                                                 @csrf
                                                 @method('DELETE')
 
-                                                <button class="text-xs text-gray-400">Delete</button>
+                                                <button class="text-xs text-blue-400">Delete</button>
                                             </form>
                                         </td>
                                     </tr>

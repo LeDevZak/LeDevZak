@@ -8,7 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
-
+    protected $fillable = [
+        'user_id',
+        'category_id',
+        'slug',
+        'title',
+        'thumbnail',
+        'excerpt',
+        'body',
+        'published_at',
+    ];
+    
     protected $with = ['category', 'author'];
 
     public function scopeFilter($query, array $filters)

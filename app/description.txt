@@ -1,0 +1,12 @@
+## descrption
+
+Bienvenue sur notre application dédiée à la gestion des dernières fonctionnalités du framework Laravel !
+
+Cette application vous permet de rester constamment à jour sur les nouveautés, les astuces,
+et les meilleures pratiques concernant Laravel. Grâce à notre interface conviviale,
+les administrateurs peuvent facilement publier de nouveaux articles et les mettre à jour à tout moment à l'aide des fonctionnalités CRUD (Create, Read, Update, Delete).
+Les utilisateurs ont également la possibilité de commenter sur les articles, ce qui favorise l'interaction et les discussions autour des sujets abordés.
+Leurs commentaires permettent d'enrichir les discussions et d'apporter différents points de vue sur les fonctionnalités présentées.
+Que vous soyez un développeur débutant ou expérimenté, notre application vous offre une plateforme centralisée pour découvrir,
+apprendre et échanger autour de Laravel.
+Restez informé et développez vos compétences avec notre application dédiée à la communauté Laravel !

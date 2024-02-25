@@ -27,9 +27,24 @@ class UserFactory extends Factory
             'username' => $this->faker->unique()->userName(),
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'password' => '2000@Abcd', // password
             'remember_token' => Str::random(10),
+            'isAdmin' => false, // Default to false, change to true for admin users
         ];
+    }
+
+    /**
+     * Indicate that the model is an admin user.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function admin()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'isAdmin' => true,
+            ];
+        });
     }
 
     /**

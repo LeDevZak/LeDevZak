@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class SessionsController extends Controller
 {
@@ -11,27 +15,34 @@ class SessionsController extends Controller
         return view('sessions.create');
     }
 
-    public function store()
+    public function store(Request $request)
     {
-        $attributes = request()->validate([
+        $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
-
-        if (! auth()->attempt($attributes)) {
-            throw ValidationException::withMessages([
-                'email' => 'Your provided credentials could not be verified.'
-            ]);
+    
+        // Retrieve user by email
+        $user = User::where('email', $credentials['email'])->first();
+    
+        // Check if user exists and password matches
+        if ($user && $user->password === $credentials['password']) {
+            // Authenticate user
+            Auth::login($user);
+    
+            // Redirect authenticated user
+            return redirect('/')->with('success', 'Welcome Back!');
         }
-
-        session()->regenerate();
-
-        return redirect('/')->with('success', 'Welcome Back!');
+    
+        // Authentication failed
+        throw ValidationException::withMessages([
+            'email' => 'Invalid credentials.',
+        ]);
     }
-
+    
     public function destroy()
     {
-        auth()->logout();
+        Auth::logout();
 
         return redirect('/')->with('success', 'Goodbye!');
     }

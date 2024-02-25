@@ -2,18 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PostExport;
+use App\Imports\PostImport;
 use App\Models\Post;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AdminPostController extends Controller
 {
-    public function index()
+    public function __construct()
     {
-        return view('admin.posts.index', [
-            'posts' => Post::paginate(50)
-        ]);
+        $this->middleware(function ($request, $next) {
+            if (!Gate::allows('admin')) {
+                abort(403, 'Unauthorized');
+            }
+
+            return $next($request);
+        });
     }
 
+    public function index()
+    {
+        $routeImport = route('admin.posts.import'); 
+        $routeExport = route('admin.posts.export'); 
+        
+        return view('admin.posts.index', [
+            'posts' => Post::paginate(40), 
+            'routeImport' => $routeImport, 
+            'routeExport' => $routeExport
+        ]);
+    }
+    
     public function create()
     {
         return view('admin.posts.create');
@@ -21,9 +43,12 @@ class AdminPostController extends Controller
 
     public function store()
     {
-        Post::create(array_merge($this->validatePost(), [
+        $attributes = $this->validatePost();
+
+        $attributes['thumbnail'] = request()->file('thumbnail')->store('thumbnails');
+
+        Post::create(array_merge($attributes, [
             'user_id' => request()->user()->id,
-            'thumbnail' => request()->file('thumbnail')->store('thumbnails')
         ]));
 
         return redirect('/');
@@ -38,7 +63,7 @@ class AdminPostController extends Controller
     {
         $attributes = $this->validatePost($post);
 
-        if ($attributes['thumbnail'] ?? false) {
+        if (request()->hasFile('thumbnail')) {
             $attributes['thumbnail'] = request()->file('thumbnail')->store('thumbnails');
         }
 
@@ -67,4 +92,30 @@ class AdminPostController extends Controller
             'category_id' => ['required', Rule::exists('categories', 'id')]
         ]);
     }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv,txt'
+        ]);
+        
+        Excel::import(new PostImport, $request->file('file'));
+    
+        return redirect()->back()->with('success', 'Posts imported successfully!');
+    }
+    
+    public function export()
+    {
+        return Excel::download(new PostExport, 'posts.xlsx');
+    }
+    
+    public function downloadPDF()
+    {
+    $posts = Post::all();
+
+    $pdf = PDF::loadView('admin.posts.download-pdf', compact('posts'));
+
+    return $pdf->download('posts.pdf');
+    }
+
 }
